@@ -1,5 +1,8 @@
-CREATE DATABASE dairymanagement;
-USE dairymanagement;
+-- Create User Table
+CREATE TABLE Users (
+    username VARCHAR(255) PRIMARY KEY,
+    password VARCHAR(255) NOT NULL
+);
 
 -- Create Supplier Table
 CREATE TABLE Supplier (
