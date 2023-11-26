@@ -183,4 +183,3 @@ BEGIN
 END$$
 
 DELIMITER ;
-;
