@@ -55,14 +55,17 @@ DELIMITER ;
 USE `dairymanagement`;
 DROP function IF EXISTS `serveItemAndUpdate`;
 
+USE `dairymanagement`;
+DROP function IF EXISTS `dairymanagement`.`serveItemAndUpdate`;
+;
+
 DELIMITER $$
 USE `dairymanagement`$$
-CREATE FUNCTION serveItemAndUpdate(
+CREATE DEFINER=`root`@`localhost` FUNCTION `serveItemAndUpdate`(
     inventoryID INT,
     itemName VARCHAR(255),
     quantityRequested INT
-)
-RETURNS VARCHAR(20)
+) RETURNS varchar(20) CHARSET utf8mb4
 BEGIN
     DECLARE remainingQuantity INT;
     DECLARE remaining INT;
@@ -75,10 +78,6 @@ BEGIN
 
     -- Check if there is sufficient quantity
     IF remainingQuantity >= quantityRequested THEN
-        -- Update InventoryItem table
-        UPDATE InventoryItem
-        SET CurrentQuantity = calculateRemainingQuantity(inventoryID, itemName, quantityRequested)
-        WHERE InventoryID = inventoryID AND ItemName = itemName;
 
         -- Update Transaction table
         WHILE quantityRequested > 0 DO
@@ -114,33 +113,22 @@ DELIMITER ;
 USE `dairymanagement`;
 DROP function IF EXISTS `updateTransactionAndInventory`;
 
+USE `dairymanagement`;
+DROP function IF EXISTS `dairymanagement`.`updateTransactionAndInventory`;
+;
+
 DELIMITER $$
 USE `dairymanagement`$$
-CREATE FUNCTION updateTransactionAndInventory(
+CREATE DEFINER=`root`@`localhost` FUNCTION `updateTransactionAndInventory`(
     globalDate VARCHAR(10) -- Assuming the global date is provided as 'DD-MM-YYYY'
-)
-RETURNS VARCHAR(20)
+) RETURNS varchar(20) CHARSET utf8mb4
 BEGIN
     -- Remove expired transactions
     DELETE FROM Transaction
     WHERE STR_TO_DATE(globalDate, '%d-%m-%Y') - INTERVAL Item.ExpiryDays DAY > TransactionDate;
 
-    -- Update InventoryItem table
-    UPDATE InventoryItem i
-    JOIN (
-        SELECT
-            t.InventoryID,
-            t.ItemName,
-            GREATEST(i.CurrentQuantity - t.QuantityRemaining, 0) AS UpdatedQuantity
-        FROM Transaction t
-        JOIN InventoryItem i ON t.InventoryID = i.InventoryID AND t.ItemName = i.ItemName
-        WHERE STR_TO_DATE(globalDate, '%d-%m-%Y') - INTERVAL Item.ExpiryDays DAY > t.TransactionDate
-    ) AS updated
-    ON i.InventoryID = updated.InventoryID AND i.ItemName = updated.ItemName
-    SET i.CurrentQuantity = updated.UpdatedQuantity;
-
     RETURN 'Success';
-END;$$
+END$$
 
 DELIMITER ;
 
