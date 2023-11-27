@@ -1,10 +1,8 @@
 # src/database_operations.py
-
-
 def create_database(connection):
     try:
         cursor = connection.cursor()
-        database_name = "dairymanagement1"
+        database_name = "dairymanagement"
 
         drop_database_query = f"DROP DATABASE IF EXISTS {database_name}"
         cursor.execute(drop_database_query)
@@ -76,10 +74,9 @@ def execute_sql_script(connection, script_path):
 
 def create_trigger_after_transaction_update(connection):
     try:
-        # Create a cursor object to execute SQL queries
+
         cursor = connection.cursor()
 
-        # Define the trigger creation SQL
         trigger_sql = """
         CREATE TRIGGER after_transaction_update
         AFTER UPDATE ON Transaction
@@ -97,10 +94,8 @@ def create_trigger_after_transaction_update(connection):
         cursor.execute(trigger_sql)
         connection.commit()
 
-        print("After Transaction Update Trigger created successfully!")
-
     except Exception as err:
-        # Handle other exceptions
+
         raise Exception(f"Unexpected error: {err}")
 
     finally:
@@ -118,7 +113,7 @@ def create_trigger_after_transaction_delete(connection):
         FOR EACH ROW
         BEGIN
             -- Check if the difference between transaction date and current date is greater than expiry date
-            IF DATEDIFF(CURRENT_DATE, OLD.TransactionDate) > (SELECT ExpiryDate FROM Item WHERE ItemName = OLD.ItemName) THEN
+            IF OLD.QuantityRemaining <> 0 AND DATEDIFF(@CURRENT_DATE, OLD.TransactionDate) > (SELECT ExpiryDays FROM Item WHERE ItemName = OLD.ItemName) THEN
                 -- Update the CurrentQuantity in the corresponding InventoryItem
                 UPDATE InventoryItem
                 SET CurrentQuantity = CurrentQuantity - OLD.QuantityRemaining
@@ -130,8 +125,6 @@ def create_trigger_after_transaction_delete(connection):
         cursor.execute(trigger_sql)
         connection.commit()
 
-        print("After Transaction Delete Trigger created successfully!")
-
     except Exception as err:
         # Handle other exceptions
         raise Exception(f"Unexpected error: {err}")
@@ -140,6 +133,8 @@ def create_trigger_after_transaction_delete(connection):
 
         if cursor:
             cursor.close()
+
+
 
 
         

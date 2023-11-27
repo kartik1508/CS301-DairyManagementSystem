@@ -1,3 +1,5 @@
+SET @CURRENT_DATE = '2023-01-01';
+
 -- Create User Table
 CREATE TABLE Users (
     username VARCHAR(255) PRIMARY KEY,
