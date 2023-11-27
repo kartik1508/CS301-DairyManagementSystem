@@ -1,3 +1,4 @@
+
 # src/database_operations.py
 def create_database(connection):
     try:

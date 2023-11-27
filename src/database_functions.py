@@ -1,3 +1,4 @@
+
 def calculate_Remaining_Quantity(connection):
     try:
         # Create a cursor object to execute SQL queries
@@ -83,7 +84,6 @@ def serveItem_And_Update_Transactions(connection):
             DECLARE served INT;
             DECLARE total_served INT DEFAULT 0;
 
-            -- SELECT * FROM Item;
 
             -- Update Transaction table
             disp: WHILE p_quantityRequested > 0 DO
@@ -105,13 +105,11 @@ def serveItem_And_Update_Transactions(connection):
                 ORDER BY TransactionDate ASC
                 LIMIT 1;
 
-                -- SELECT * FROM Transaction;
 
                 -- Check if the quantity remaining is 0, then remove the entry from Transaction table
                 DELETE FROM Transaction
                 WHERE InventoryID = p_inventoryID AND ItemName = p_itemName AND QuantityRemaining = 0;
 
-                -- SELECT * FROM Transaction;
 
                 SET p_quantityRequested = p_quantityRequested - served;
                 SET total_served = total_served + served;
@@ -122,8 +120,6 @@ def serveItem_And_Update_Transactions(connection):
         """
         cursor.execute(sql)
         connection.commit()
-
-        print("serveItemAndUpdate procedure created successfully!")
 
 
     except Exception as err:
@@ -434,7 +430,6 @@ def execute_serve_item_and_update(connection, inventory_id, item_name, quantity_
 
 def execute_daily_update(connection, date):
 
-    print("execute daily update has been called")
     try:
         cursor = connection.cursor()
         cursor.callproc('DailyUpdate', [date])
