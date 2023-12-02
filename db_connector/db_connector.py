@@ -3,6 +3,8 @@ import mysql.connector
 from dotenv import load_dotenv
 import os
 
+
+
 class DBConfig:
     def __init__(self, host, user, password):
         self.host = host

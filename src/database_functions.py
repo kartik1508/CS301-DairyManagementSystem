@@ -417,6 +417,7 @@ def execute_serve_item_and_update(connection, inventory_id, item_name, quantity_
         cursor.execute(sql_function_call % (inventory_id, item_name, quantity_requested))
         result = cursor.fetchone()[0]
 
+        print("\n")
         print("Quantity Served:", result)
         connection.commit()
 
@@ -452,6 +453,7 @@ def removedExpiredTransactions(connection):
         result = cursor.fetchone()[0]
 
         print("Removing Expired Transactions is :", result)
+        print("\n")
         connection.commit()
 
 

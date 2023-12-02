@@ -113,8 +113,9 @@ def create_trigger_after_transaction_delete(connection):
         AFTER DELETE ON Transaction
         FOR EACH ROW
         BEGIN
+
             -- Check if the difference between transaction date and current date is greater than expiry date
-            IF OLD.QuantityRemaining <> 0 AND DATEDIFF(@CURRENT_DATE, OLD.TransactionDate) > (SELECT ExpiryDays FROM Item WHERE ItemName = OLD.ItemName) THEN
+            IF OLD.QuantityRemaining <> 0 AND DATEDIFF(@CURRENT_DATE, OLD.TransactionDate) >= (SELECT ExpiryDays FROM Item WHERE ItemName = OLD.ItemName) THEN
                 -- Update the CurrentQuantity in the corresponding InventoryItem
                 UPDATE InventoryItem
                 SET CurrentQuantity = CurrentQuantity - OLD.QuantityRemaining
